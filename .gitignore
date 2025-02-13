@@ -1,1 +1,4 @@
 docs_backup_20250207
+
+# Local .env files
+.env.local

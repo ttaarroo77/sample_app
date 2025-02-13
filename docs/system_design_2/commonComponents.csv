@@ -1,6 +1,6 @@
 id,分類,ファイル名,概要,Props,画面Id
-COM-001,UI,Header,ヘッダーコンポーネント（ロゴ、ユーザー情報、ログアウト機能）,"{userName: string, onLogout: function}","['SCREEN-001', 'SCREEN-002', 'SCREEN-003']"
-COM-002,UI,KanbanCard,カンバンカードコンポーネント,"{title: string, description: string, status: string}",['SCREEN-002']
-COM-003,Form,LoginForm,ログインフォームコンポーネント,{onSubmit: function},['SCREEN-001']
-COM-004,Form,TaskForm,タスク追加・編集用フォームコンポーネント,"{onSubmit: function, initialValues: object}",['SCREEN-002']
-COM-005,UI,Avatar,アバター画像表示コンポーネント,"{imageUrl: string, size: string}","['SCREEN-003', 'SCREEN-001']"
+COM-001,UI,Auth.tsx,ログイン画面の認証コンポーネント。メールアドレスとパスワードの入力フォームと認証処理を行う。,{},['login']
+COM-002,UI,KanbanBoard.tsx,カンバンボード全体を管理するコンポーネント。大目標、中目標、小目標の付箋をドラッグ＆ドロップで操作する。,{},['kanban']
+COM-003,UI,Column.tsx,カンバン上のカラム（大目標、中目標、小目標）を表現するコンポーネント。,"{title: string, type: 'big' | 'medium' | 'small', goals: GoalType[]}",['kanban']
+COM-004,UI,GoalCard.tsx,カンバン上の付箋（目標）を表現するコンポーネント。タイトルの編集や色の設定UIを含む。,{goal: GoalType},['kanban']
+COM-007,UI,GoalBreakdown.tsx,AI連携による目標細分化を支援するコンポーネント。プロンプト入力やMDファイルアップロードを行い、AIで中・小目標を生成しカンバンに反映する。,{},['kanban']

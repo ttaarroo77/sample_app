@@ -1,81 +1,111 @@
-# プロジェクト構造概要 (overview_0/project-structure.md)
+—--
+name: "docs/overview_0/project-structure.md"
+title: "プロジェクト構造概要 (Project Structure)"
+description: "AI Todo Management - ディレクトリ構成など"
+---
 
-このドキュメントは、AI Driven Todo アプリケーションのプロジェクト構造の概要を示します。
+# プロジェクト構造概要：本アプリのディレクトリ構造は、以下のような**モノレポ**形式(一例)を想定します。
 
-## チェックリスト
-
-*   [x] 主要なディレクトリとその役割の説明
-*   [x] フロントエンドとバックエンドのディレクトリ構造
-*   [x] 重要なファイル (設定ファイルなど) の簡単な説明
-
-## プロジェクト構造
-ai-driven-todo/
-├── backend/ # バックエンド (Node.js/Express)
-│ ├── src/
-│ │ ├── controllers/ # API リクエストハンドラ
-│ │ ├── models/ # データベースモデル
-│ │ ├── routes/ # API ルーティング
-│ │ ├── services/ # ビジネスロジック
-│ │ ├── app.ts # Express アプリケーションのエントリポイント
-│ │ └── ...
-│ ├── .env # 環境変数
-│ ├── package.json # 依存関係とスクリプト
-│ └── ...
-├── frontend/ # フロントエンド (Next.js/React)
-│ ├── pages/
-│ │ ├── api/ # API Routes (Next.js の機能)
-│ │ ├── _app.tsx # アプリケーション全体のレイアウト
-│ │ ├── index.tsx # ホームページ (ダッシュボード)
-│ │ └── ...
-│ ├── components/ # 再利用可能な UI コンポーネント
-│ │ ├── Auth/ # 認証関連コンポーネント
-│ │ ├── Todo/ # Todo関連コンポーネント
-│ │ ├── User/ # ユーザー関連コンポーネント
-│ │ ├── Common/ # 共通コンポーネント
-│ │ └── ...
-│ ├── styles/ # グローバルスタイル、CSS Modules
-│ ├── public/ # 静的ファイル (画像など)
-│ ├── lib/ # ユーティリティ関数など
-│ ├── types/ # TypeScriptの型定義
-│ ├── context/ # React Context
-│ ├── hooks/ # カスタムフック
-│ ├── .env # 環境変数
-│ ├── package.json # 依存関係とスクリプト
-│ └── ...
-├── docs/ # ドキュメント
-│ ├── overview_0/ # このディレクトリ
-│ └── ...
+ai-todo-app/
+├── .github/
+│   └── workflows/
+│       └── ci-test.yml
 ├── .gitignore
+├── LICENSE
 ├── README.md
-└── ...
+├── package.json   # モノレポ全体管理用
+├── tsconfig.json
+├── backend/
+│   ├── src/
+│   │   ├── controllers/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   └── server.ts
+│   ├── package.json
+│   └── yarn.lock
+├── cursorrules/
+├── docs/
+│   ├── error_countermeasures/
+│   ├── history/
+│   ├── overview_0/
+│   │   ├── api-routes.md
+│   │   ├── components.md
+│   │   ├── database.md
+│   │   ├── product-brief.md
+│   │   ├── project-structure.md
+│   │   └── types.md
+│   ├── plan/
+│   │   └── next_plan.md
+│   ├── requirements_1/
+│   │   ├── function.csv
+│   │   ├── functional_requirements.csv
+│   │   └── non_functional_requirements.csv
+│   ├── system_design_2/
+│   │   ├── architecture.md       # 既存のファイル
+│   │   ├── backendHandlesLists.csv
+│   │   ├── commonComponents.csv
+│   │   ├── database.md
+│   │   ├── screensLists.csv
+│   │   ├── sequences.md
+│   │   ├── tableDefinitions.csv
+│   │   └── ui.md
+│   └── testing_4/
+│       ├── integrationTests.csv
+│       └── systemTests.csv
+├── docs_backup/
+│   └── 20250212/
+│       └── # (バックアップされたドキュメント)
 
+├── frontend/
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── kanban/
+│   │   │   │   └── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   ├── login/
+│   │   │   │   └── page.tsx
+│   │   │   ├── mypage/
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── components/
+│   │   │   └── # (例: TaskList.tsx, TaskItem.tsx, Button.tsx など)
+│   │   ├── lib/
+│   │   │   └── # (例: api.ts, utils.ts など)
+│   │   ├── public/
+│   │   │   └── # (静的ファイル: images, fonts など)
+│   │   ├── styles/
+│   │   │   └── # (例: globals.css, theme.ts など)
+│   │   └── types/
+│   │       └── # (例: task.ts, user.ts など)
+│   ├── package.json
+│   └── yarn.lock
 
-**主要なディレクトリ:**
+└── tests/
+    ├── backend/
+    │    └── # (バックエンドのテストファイル 例: taskController.test.ts)
+    └── frontend/
+         └── # (フロントエンドのテストファイル 例: TaskList.test.tsx)
 
-*   **`backend/`**: Node.js (Express) を使用したバックエンドのソースコードが含まれます。
-    *   `controllers/`: API リクエストを処理する関数を格納します。
-    *   `models/`: データベースのテーブルに対応するモデルを定義します。
-    *   `routes/`: API のエンドポイントとリクエストハンドラを紐付けます。
-    *   `services/`: ビジネスロジックを実装します。
-    *   `app.ts`: Express アプリケーションのエントリポイントです。
+1. フロントエンド (frontend/)
+- Next.js or Reactベースのアプリ。
+- app/login/, app/kanban/, app/mypage/ など、3画面を中心に実装。
+- components/ に共通UIコンポーネント、lib/ にユーティリティ類、types/ に型定義(Front側使用)を配置。
 
-*   **`frontend/`**: Next.js (React + TypeScript) を使用したフロントエンドのソースコードが含まれます。
-    *   `pages/`: ページコンポーネントを格納します。Next.js のファイルシステムベースのルーティングを使用します。
-        *   `api/`: API Routes (サーバーレス関数) を格納します。
-        *   `_app.tsx`: アプリケーション全体のレイアウトを定義します。
-        *   `index.tsx`: ホームページ (ダッシュボード) のコンポーネントです。
-    *   `components/`: 再利用可能な UI コンポーネントを格納します。機能ごとにサブディレクトリを作成します。
-    *   `styles/`: グローバルスタイルや CSS Modules を格納します。
-    *   `public/`: 画像などの静的ファイルを格納します。
-    *   `lib/`: ユーティリティ関数などを格納します。
-    *   `types/`: TypeScript の型定義を格納します。
-    *   `context/`: React Context を格納します。
-    *   `hooks/`: カスタムフックを格納します。
+2. バックエンド (backend/)
+- Node.js / Express などのAPIサーバ、または Supabase Edge Functions など。
+- routes/ にエンドポイント、models/ にDBモデル(ORM等)、controllers/ に業務ロジックを配置。
+- 目標のCRUD (/api/goals) やAI連携 (/api/ai) などを実装する想定。
 
-*   **`docs/`**: プロジェクトのドキュメントが格納されます。
+3. テスト (tests/)
+- フロント・バックの単体テスト、E2Eテストをここに配置 (Jest, Cypressなど)。
+- CI/CDパイプライン (.github/workflows/*.yml) で自動実行可能。
 
-**重要なファイル:**
+4. ドキュメント (docs/)
+- 要件定義や設計書をまとめるフォルダ。
+- 現状、この overview_0 フォルダで概要を管理し、詳細はsystem_design_2以下にまとめる。
 
-*   **`.env`**: 環境変数ファイル (データベース接続情報など)。
-*   **`package.json`**: プロジェクトの依存関係とスクリプトを定義します。
-*   **`README.md`**: プロジェクトの概要とセットアップ手順を記述します。
+5. ポイント
+- 不要な管理画面や余分なUIは生成しない。
+- gear.indigo等の自動生成ツールで追加される画面は削除し、3画面のみをメインに保つ。
+- DBはSQLiteやSupabase PostgreSQLなど自由。
+- AI連携やMarkdown連携はあくまでオプション。

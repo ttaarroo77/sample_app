@@ -1,0 +1,1 @@
+const geminiApiKey = process.env.GOOGLE_GEMINI_API_KEY 

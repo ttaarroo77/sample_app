@@ -1,14 +1,17 @@
 id,テーブル名,項目名,データ形式,制約,初期値,外部キー,概要
-tab-USERS,users,id,INTEGER,PRIMARY KEY AUTOINCREMENT,,,ユーザーID
-tab-USERS,users,email,TEXT,"UNIQUE, NOT NULL",,,Eメールアドレス
-tab-USERS,users,password,TEXT,NOT NULL,,,パスワード（ハッシュ化して保存）
-tab-USERS,users,username,TEXT,NOT NULL,,,ユーザー名
-tab-USERS,users,avatar_url,TEXT,,null,,アバター画像のURL
-tab-TODOS,todos,id,INTEGER,PRIMARY KEY AUTOINCREMENT,,,Todo ID
-tab-TODOS,todos,user_id,INTEGER,NOT NULL,,REFERENCES users(id),ユーザーID（外部キー）
-tab-TODOS,todos,title,TEXT,NOT NULL,,,Todoのタイトル
-tab-TODOS,todos,status,TEXT,NOT NULL,"""To Do""",,"Todoの状態 (To Do, In Progress, Done)"
-tab-TODOS,todos,checkboxes,TEXT,,"[{""label"": """", ""checked"": false}, {""label"": """", ""checked"": false}, {""label"": """", ""checked"": false}]",,チェックボックスの状態 (JSON配列)
-tab-KANBAN_CONFIG,kanban_config,id,INTEGER,PRIMARY KEY AUTOINCREMENT,,,設定ID
-tab-KANBAN_CONFIG,kanban_config,user_id,INTEGER,NOT NULL,,REFERENCES users(id),ユーザーID（外部キー）
-tab-KANBAN_CONFIG,kanban_config,config,TEXT,,"{""todo"": ""To Do"", ""in_progress"": ""In Progress"", ""done"": ""Done""}",,カンバンの名称設定 (JSON)
+tab-USERS,users,id,UUID,NOT NULL PRIMARY KEY,uuid_generate_v4(),,ユーザーID (UUID)
+tab-USERS,users,email,VARCHAR(255),NOT NULL UNIQUE,,,メールアドレス
+tab-USERS,users,password,VARCHAR(255),NOT NULL,,,パスワード (ハッシュ化して保存)
+tab-USERS,users,username,VARCHAR(50),,,,ユーザー名
+tab-USERS,users,avatar_url,VARCHAR(255),,,,アバター画像のURL
+tab-GOALS,goals,id,BIGINT,NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,,,目標ID
+tab-GOALS,goals,title,VARCHAR(255),NOT NULL,,,目標タイトル
+tab-GOALS,goals,type,VARCHAR(10),"NOT NULL CHECK (type IN ('big', 'medium', 'small'))",'small',,"目標の種類 (big, medium, small)"
+tab-GOALS,goals,color,VARCHAR(20),"NOT NULL CHECK (color IN ('red', 'yellow', 'purple', 'blue', 'green', 'pink', 'gray'))",'gray',,目標の色
+tab-GOALS,goals,parent_id,BIGINT,,NULL,tab-GOALS(id),親目標ID (大目標->中目標->小目標 の親子関係)
+tab-GOALS,goals,user_id,UUID,NOT NULL,,tab-USERS(id),ユーザーID (目標の所有者)
+tab-BOARDS,boards,id,BIGINT,NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,,,ボードID
+tab-BOARDS,boards,title,VARCHAR(255),NOT NULL,,,ボードタイトル
+tab-BOARDS,boards,type,VARCHAR(10),"NOT NULL CHECK (type IN ('big', 'medium', 'small'))",'small',,"ボードの種類 (big, medium, small)"
+tab-BOARDS,boards,color,VARCHAR(20),"NOT NULL CHECK (color IN ('red', 'yellow', 'purple', 'blue', 'green', 'pink', 'gray'))",'gray',,ボードの色
+tab-BOARDS,boards,parent_goal_id,BIGINT,,NULL,tab-GOALS(id),親目標ID (紐づく大目標のID)
