@@ -1,6 +1,0 @@
-id,分類,ファイル名,概要,Props,画面Id
-COM-001,UI,Header,ヘッダーコンポーネント（ロゴ、ユーザー情報、ログアウト機能）,"{userName: string, onLogout: function}","['SCREEN-001', 'SCREEN-002', 'SCREEN-003']"
-COM-002,UI,KanbanCard,カンバンカードコンポーネント,"{title: string, description: string, status: string}",['SCREEN-002']
-COM-003,Form,LoginForm,ログインフォームコンポーネント,{onSubmit: function},['SCREEN-001']
-COM-004,Form,TaskForm,タスク追加・編集用フォームコンポーネント,"{onSubmit: function, initialValues: object}",['SCREEN-002']
-COM-005,UI,Avatar,アバター画像表示コンポーネント,"{imageUrl: string, size: string}","['SCREEN-003', 'SCREEN-001']"
