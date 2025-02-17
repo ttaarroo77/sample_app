@@ -4,6 +4,16 @@ title: "プロジェクト構造概要 (Project Structure)"
 description: "AI Todo Management - ディレクトリ構成など"
 ---
 
+# プロジェクト構造概要
+
+## 主要な変更点
+- `backend`ディレクトリを`supabase`に置き換え
+- 認証機能をSupabase Authに移行
+- データベースをSupabase PostgreSQLに移行
+- テストファイルをtests/に移行
+- 古いディレクトリ構成は、backup/20250207にバックアップ
+
+
 # プロジェクト構造概要：本アプリのディレクトリ構造は、以下のような**モノレポ**形式(一例)を想定します。
 
 ai-todo-app/
@@ -15,14 +25,14 @@ ai-todo-app/
 ├── README.md
 ├── package.json   # モノレポ全体管理用
 ├── tsconfig.json
-├── backend/
-│   ├── src/
-│   │   ├── controllers/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   └── server.ts
+├── supabase/   # 旧backendディレクトリを置き換え
+│   ├── migrations/
+│   ├── seed.sql
+│   ├── supabase/
+│   │   ├── config.toml
+│   │   └── ...
 │   ├── package.json
-│   └── yarn.lock
+│   └── ...
 ├── cursorrules/
 ├── docs/
 │   ├── error_countermeasures/
@@ -91,7 +101,7 @@ ai-todo-app/
 - app/login/, app/kanban/, app/mypage/ など、3画面を中心に実装。
 - components/ に共通UIコンポーネント、lib/ にユーティリティ類、types/ に型定義(Front側使用)を配置。
 
-2. バックエンド (backend/)
+2. バックエンド (supabase/)
 - Node.js / Express などのAPIサーバ、または Supabase Edge Functions など。
 - routes/ にエンドポイント、models/ にDBモデル(ORM等)、controllers/ に業務ロジックを配置。
 - 目標のCRUD (/api/goals) やAI連携 (/api/ai) などを実装する想定。
