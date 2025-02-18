@@ -1,4 +1,28 @@
-docs_backup_20250207
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
 
-# Local .env files
-.env.local
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+
+# IDE
+.vscode/
+
+
+# backup
+docs_backup*/
+docs_backup/
+@docs_backup*/
+# Ignore progress report backup
+@progress_report copy/

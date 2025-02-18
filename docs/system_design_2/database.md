@@ -1,103 +1,141 @@
-—--
-name: "docs/system_design_2/database.md"
-title: "詳細DB設計 (Database)"
-description: "AI Todo Management - ER図やテーブル定義の詳細"
----
 
 # 詳細DB設計
 
-本ファイルは、**AI Todo Management**におけるDBスキーマを詳細化します。  
+本ファイルは、**AI Todo Management** のDBスキーマの詳細を記述しています。
 **概要レベル**のテーブル情報は `overview_0/database.md` を参照してください。
 
 ---
 
-## 1. ER図 (例)
+## 1. ER図
 
-```mermaid
 erDiagram
-    USERS {
+    PROFILES {
         uuid id PK
-        varchar email
-        varchar password  <-- Supabase使うなら不要
-        varchar username
-        varchar avatar_url
+        text username
+        text avatar_url
+        timestamptz updated_at
+    }
+    BOARDS {
+        bigint id PK
+        uuid user_id FK
+        text title
+        bigint parent_goal_id FK
+        timestamptz created_at
     }
     GOALS {
         bigint id PK
-        varchar title
-        varchar type  --> 'big'|'medium'|'small'
-        varchar color
-        bigint parent_id FK
         uuid user_id FK
+        text title
+        text description
+        text type
+        text status
+        bigint board_id FK
+        text color
+        timestamptz created_at
+        timestamptz updated_at
     }
-    USERS ||--o{ GOALS : "1対多"
-
-    %% オプションで boards テーブルを追加する場合:
-    BOARDS {
-        bigint id PK
-        varchar title
-        varchar type
-        varchar color
-        bigint parent_goal_id FK
-    }
-    GOALS ||--o{ BOARDS : "has many columns if needed"
+    PROFILES ||--o{ BOARDS : "owns"
+    PROFILES ||--o{ GOALS : "owns"
+    BOARDS ||--o{ GOALS : "contains"
 
 
 ## 2. テーブル定義詳細
-### 2-1. users テーブル
+### 2-1. profiles テーブル
+
 PK: id (uuid)
-Supabaseを使う場合、auth.users が標準であるため、アプリ専用テーブルでは補助情報(avatar_url, username) のみ管理する形にする事が多い。
+Supabaseのauth.usersテーブルと連携し、ユーザーの補助情報を管理します。
 
-表
+カラム名	型	Not Null	備考
+id	uuid	YES	auth.usersテーブルの外部キー
+username	text	NO	3文字以上の制約あり
+avatar_url	text	NO	プロフィール画像のURL
+updated_at	timestamptz	NO	更新日時
 
-| カラム名   | 型         | Not Null | 備考                          |
-|------------|------------|----------|-------------------------------|
-| id         | uuid PK    | YES      | Supabase Authなら自動生成      |
-| email      | varchar    | YES      | Unique制約                     |
-| password   | varchar?   | NO       | 使わない場合あり               |
-| username   | varchar    | NO       | ユーザー表示名                 |
-| avatar_url | varchar    | NO       | アバター画像のURL              |
+制約:
 
+ALTER TABLE profiles
+ADD CONSTRAINT username_length CHECK (char_length(username) >= 3);
 
-Index/Constraint例:
-CREATE UNIQUE INDEX users_email_idx ON users(email);
+### 2-2. boards テーブル
 
+PK: id (bigint)
+ユーザーの目標を整理するためのボード情報を管理します。
 
+カラム名	型	Not Null	備考
+id	bigint	YES	自動採番
+user_id	uuid	YES	profilesテーブルの外部キー
+title	text	YES	ボードのタイトル
+parent_goal_id	bigint	NO	goalsテーブルの外部キー
+created_at	timestamptz	YES	作成日時
 
-### 2-2. goals テーブル
-階層管理(大→中→小)に対応するため、parent_idを参照する場合は自己参照(Self join)
+### 2-3. goals テーブル
 
+PK: id (bigint)
+ユーザーの目標情報を管理します。
 
-| カラム名   | 型         | Not Null | 備考                          |
-|------------|------------|----------|-------------------------------|
-| id         | bigint PK  | YES      | シーケンス or AUTO INCREMENT  |
-| title      | varchar    | YES      | 目標タイトル                   |
-| type       | varchar    | YES      | 'big','medium','small'        |
-| color      | varchar    | NO       | カードカラー                   |
-| parent_id  | bigint     | NO       | 上位の goal.id                |
-| user_id    | uuid       | NO       | 所有ユーザー                   |
+カラム名	型	Not Null	備考
+id	bigint	YES	自動採番
+user_id	uuid	YES	profilesテーブルの外部キー
+title	text	YES	目標のタイトル
+description	text	NO	目標の詳細説明
+type	text	YES	big/medium/small
+status	text	YES	todo/doing/done
+board_id	bigint	NO	boardsテーブルの外部キー
+color	text	NO	目標カードの色
+created_at	timestamptz	YES	作成日時
+updated_at	timestamptz	YES	更新日時
 
+制約:
 
-Index例:
-CREATE INDEX goals_userid_idx ON goals(user_id);
-CREATE INDEX goals_parent_idx ON goals(parent_id);
+ALTER TABLE goals
+ADD CONSTRAINT type_check CHECK (type IN ('big', 'medium', 'small'));
 
+ALTER TABLE goals
+ADD CONSTRAINT status_check CHECK (status IN ('todo', 'doing', 'done'));
 
+## 3. セキュリティ設定
 
-### 2-3. boards テーブル (任意)
-もしカンバンの列概念をgoals と分離する場合のみ使用。
-小規模アプリではgoalsテーブルだけで十分対応可能。
+各テーブルにはRow Level Security (RLS)が設定されており、以下のポリシーが適用されています：
 
-## 3. AI細分化用テーブル (オプション)
-もしAIの処理履歴を残す場合は**ai_logs**などを追加し、「入力prompt」「AIレスポンス」「生成日時」などを記録すると分析しやすい。
+### 3-1. profiles テーブル
 
-## 4. Markdown入出力用テーブル (オプション)
-同様に、インポートしたファイル履歴を保存したい場合に**md_import_logs**などを用意可能。
+全ユーザーが閲覧可能
 
-## 5. 物理設計上の注意
-UUID vs AUTO INCREMENT: どちらを採用するかは好みや要件により異なる。SupabaseはUUIDがデフォルト。
-Constraints/Foreign Keys: Supabaseの場合、REFERENCES 制約を使うかどうか選択可能。
-パフォーマンス: 小規模ポートフォリオなので、基本的にIndex程度で十分。
-以上が詳細なDB設計例です。実際の実装に合わせて変更してください。
+自身のプロフィールのみ作成・更新可能
 
+### 3-2. boards テーブル
 
+所有者のみが閲覧・作成・更新・削除可能
+
+### 3-3. goals テーブル
+
+所有者のみが閲覧・作成・更新・削除可能
+
+## 4. インデックス設計
+
+主要な検索パターンに基づき、以下のインデックスを推奨します：
+
+-- プロフィール検索用
+CREATE INDEX IF NOT EXISTS profiles_username_idx ON profiles(username);
+-- ボード検索用
+CREATE INDEX IF NOT EXISTS boards_user_id_idx ON boards(user_id);
+CREATE INDEX IF NOT EXISTS boards_parent_goal_idx ON boards(parent_goal_id);
+-- 目標検索用
+CREATE INDEX IF NOT EXISTS goals_user_id_idx ON goals(user_id);
+CREATE INDEX IF NOT EXISTS goals_board_id_idx ON goals(board_id);
+CREATE INDEX IF NOT EXISTS goals_type_idx ON goals(type);
+CREATE INDEX IF NOT EXISTS goals_status_idx ON goals(status);
+
+## 5. 拡張性について
+
+現在のスキーマは、以下の拡張に対応可能です：
+
+AI処理ログの追加（ai_logs テーブル）
+
+Markdownインポート履歴（md_imports テーブル）
+
+タグ機能の追加（tags, goal_tags テーブル）
+
+コメント機能の追加（comments テーブル）
+
+これらの拡張は、アプリケーションの要件に応じて段階的に実装することが可能です。
